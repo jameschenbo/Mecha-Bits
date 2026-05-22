@@ -55,6 +55,17 @@ body {
   }
 }
 
+@keyframes hit-flash {
+  0%, 100% {
+    opacity: 1;
+    filter: brightness(1);
+  }
+  50% {
+    opacity: 0.3;
+    filter: brightness(2);
+  }
+}
+
 @keyframes twinkle {
   0%,
   100% {
@@ -106,5 +117,5 @@ body {
 }
 
 .mech-hit {
-  animation: flash 0.1s ease-in-out 2;
+  animation: hit-flash 0.1s ease-in-out 4;
 }

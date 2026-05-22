@@ -37,6 +37,7 @@ export function Mech({ mech }: MechProps) {
         style={{
           imageRendering: 'pixelated',
           transform: mech.facingRight ? 'scaleX(1)' : 'scaleX(-1)',
+          opacity: mech.isHit ? 0.5 : 1,
         }}
       >
         {mech.isAttacking ? (
@@ -47,19 +48,6 @@ export function Mech({ mech }: MechProps) {
           <IdleFrame primaryColor={primaryColor} secondaryColor={secondaryColor} />
         )}
       </svg>
-      {mech.isHit && (
-        <div
-          style={{
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            backgroundColor: 'rgba(255, 255, 255, 0.8)',
-            animation: 'flash 0.1s ease-out',
-          }}
-        />
-      )}
     </div>
   );
 }
