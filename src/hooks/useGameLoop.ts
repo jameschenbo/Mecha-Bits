@@ -1,12 +1,13 @@
 import { useEffect, useRef } from 'react';
 import { useGameStore } from '../stores/gameStore';
 import { applyMovement, updatePhysics } from '../utils/physics';
-import { applyAttack, isInAttackRange } from '../utils/combat';
-import type { PlayerId, Effect } from '../types/game';
+import { applyAttack } from '../utils/combat';
+import type { Effect } from '../types/game';
 
 export function useGameLoop() {
   const animationFrameRef = useRef<number>();
   const lastTimeRef = useRef<number>(0);
+  const lastAttackTimeRef = useRef({ player1: 0, player2: 0 });
 
   const {
     gameStatus,
@@ -55,7 +56,7 @@ export function useGameLoop() {
         newMechs.player1 = updatePhysics(newMechs.player1);
         newMechs.player2 = updatePhysics(newMechs.player2);
 
-        if (player1Controls.attack) {
+        if (player1Controls.attack && currentTime - lastAttackTimeRef.current.player1 >= 500) {
           const result = applyAttack(
             newMechs.player1,
             newMechs.player2,
@@ -64,6 +65,7 @@ export function useGameLoop() {
           if (result.damage > 0) {
             newMechs.player1 = result.attacker;
             newMechs.player2 = result.defender;
+            lastAttackTimeRef.current.player1 = currentTime;
 
             const effect: Effect = {
               id: `${currentTime}-hit-1`,
@@ -77,7 +79,7 @@ export function useGameLoop() {
           }
         }
 
-        if (player2Controls.attack) {
+        if (player2Controls.attack && currentTime - lastAttackTimeRef.current.player2 >= 500) {
           const result = applyAttack(
             newMechs.player2,
             newMechs.player1,
@@ -86,6 +88,7 @@ export function useGameLoop() {
           if (result.damage > 0) {
             newMechs.player2 = result.attacker;
             newMechs.player1 = result.defender;
+            lastAttackTimeRef.current.player2 = currentTime;
 
             const effect: Effect = {
               id: `${currentTime}-hit-2`,
@@ -97,30 +100,6 @@ export function useGameLoop() {
             };
             addEffect(effect);
           }
-        }
-
-        if (player1Controls.attack && isInAttackRange(newMechs.player1, newMechs.player2)) {
-          const attackEffect: Effect = {
-            id: `${currentTime}-attack-1`,
-            type: 'attack',
-            x: newMechs.player1.x + (newMechs.player1.facingRight ? 48 : -20),
-            y: newMechs.player1.y + 20,
-            frame: 0,
-            maxFrames: 15,
-          };
-          addEffect(attackEffect);
-        }
-
-        if (player2Controls.attack && isInAttackRange(newMechs.player2, newMechs.player1)) {
-          const attackEffect: Effect = {
-            id: `${currentTime}-attack-2`,
-            type: 'attack',
-            x: newMechs.player2.x + (newMechs.player2.facingRight ? 48 : -20),
-            y: newMechs.player2.y + 20,
-            frame: 0,
-            maxFrames: 15,
-          };
-          addEffect(attackEffect);
         }
 
         clearAttackFlags();

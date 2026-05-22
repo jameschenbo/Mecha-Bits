@@ -19,6 +19,7 @@ interface GameStore {
   setMechs: (mechs: { player1: Mech; player2: Mech }) => void;
   addEffect: (effect: Effect) => void;
   removeEffect: (id: string) => void;
+  setEffects: (effects: Effect[] | ((prev: Effect[]) => Effect[])) => void;
   clearEffects: () => void;
   setPlayer1Controls: (controls: Partial<Controls>) => void;
   setPlayer2Controls: (controls: Partial<Controls>) => void;
@@ -129,6 +130,10 @@ export const useGameStore = create<GameStore>((set) => ({
     set((state) => ({
       effects: state.effects.filter((e) => e.id !== id),
     })),
+
+  setEffects: (effects) => set((state) => ({ 
+    effects: typeof effects === 'function' ? effects(state.effects) : effects 
+  })),
 
   clearEffects: () => set({ effects: [] }),
 

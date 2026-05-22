@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { useGameStore } from '../../stores/gameStore';
 import { useKeyboard } from '../../hooks/useKeyboard';
 import { useGameLoop } from '../../hooks/useGameLoop';
@@ -11,23 +11,43 @@ import { GAME_CONFIG } from '../../utils/constants';
 export function GameCanvas() {
   useKeyboard();
   useGameLoop();
+  const animationFrameRef = useRef<number>();
 
-  const { mechs, effects, removeEffect, gameStatus } = useGameStore();
+  const {
+    mechs,
+    effects,
+    gameStatus,
+    setEffects,
+  } = useGameStore();
 
   useEffect(() => {
-    if (gameStatus !== 'playing') return;
+    if (gameStatus !== 'playing') {
+      if (animationFrameRef.current) {
+        cancelAnimationFrame(animationFrameRef.current);
+      }
+      return;
+    }
 
-    const interval = setInterval(() => {
-      effects.forEach((effect) => {
-        const updatedEffect = { ...effect, frame: effect.frame + 1 };
-        if (updatedEffect.frame >= updatedEffect.maxFrames) {
-          removeEffect(effect.id);
-        }
+    let currentEffects = effects;
+    const updateEffects = () => {
+      setEffects(prevEffects => {
+        currentEffects = prevEffects
+          .map(effect => ({ ...effect, frame: effect.frame + 1 }))
+          .filter(effect => effect.frame < effect.maxFrames);
+        return currentEffects;
       });
-    }, 16);
 
-    return () => clearInterval(interval);
-  }, [effects, removeEffect, gameStatus]);
+      animationFrameRef.current = requestAnimationFrame(updateEffects);
+    };
+
+    animationFrameRef.current = requestAnimationFrame(updateEffects);
+
+    return () => {
+      if (animationFrameRef.current) {
+        cancelAnimationFrame(animationFrameRef.current);
+      }
+    };
+  }, [gameStatus, setEffects]);
 
   return (
     <div
@@ -64,7 +84,7 @@ export function GameCanvas() {
         <BattleField />
         <Mech mech={mechs.player1} />
         <Mech mech={mechs.player2} />
-        <Effects effects={effects} onEffectComplete={removeEffect} />
+        <Effects effects={effects} />
       </div>
 
       <div
