@@ -29,13 +29,13 @@ interface GameStore {
   clearHitFlags: (currentTime: number) => void;
 }
 
-const createInitialMech = (
+export const createInitialMech = (
   id: 'player1' | 'player2',
-  x: number
+  x?: number
 ): Mech => ({
   id,
   name: id === 'player1' ? 'Iron Fist' : 'Iron Wall',
-  x,
+  x: x ?? (id === 'player1' ? GAME_CONFIG.PLAYER1_START_X : GAME_CONFIG.PLAYER2_START_X),
   y: GAME_CONFIG.START_Y,
   velocityX: 0,
   velocityY: 0,
@@ -77,8 +77,8 @@ export const useGameStore = create<GameStore>((set) => ({
       gameStatus: 'playing',
       winner: null,
       mechs: {
-        player1: createInitialMech('player1', GAME_CONFIG.PLAYER1_START_X),
-        player2: createInitialMech('player2', GAME_CONFIG.PLAYER2_START_X),
+        player1: createInitialMech('player1'),
+        player2: createInitialMech('player2'),
       },
       effects: [],
     }),
@@ -88,8 +88,8 @@ export const useGameStore = create<GameStore>((set) => ({
       gameStatus: 'start',
       winner: null,
       mechs: {
-        player1: createInitialMech('player1', GAME_CONFIG.PLAYER1_START_X),
-        player2: createInitialMech('player2', GAME_CONFIG.PLAYER2_START_X),
+        player1: createInitialMech('player1'),
+        player2: createInitialMech('player2'),
       },
       effects: [],
       player1Controls: {

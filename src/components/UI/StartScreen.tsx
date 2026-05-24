@@ -1,8 +1,11 @@
 import { useGameStore } from '../../stores/gameStore';
 import { COLORS } from '../../utils/constants';
+import { useResponsiveGame } from '../../hooks/useResponsiveGame';
 
 export function StartScreen() {
   const startGame = useGameStore((state) => state.startGame);
+  useResponsiveGame();
+  const isMobile = window.innerWidth <= 768;
 
   return (
     <div
@@ -12,14 +15,14 @@ export function StartScreen() {
         alignItems: 'center',
         justifyContent: 'center',
         minHeight: '80vh',
-        gap: '40px',
-        padding: '40px',
+        gap: isMobile ? '20px' : '40px',
+        padding: isMobile ? '20px' : '40px',
       }}
     >
       <div style={{ textAlign: 'center' }}>
         <h1
           style={{
-            fontSize: '64px',
+            fontSize: isMobile ? '36px' : '64px',
             fontFamily: 'monospace',
             fontWeight: 'bold',
             color: COLORS.ACCENT,
@@ -32,7 +35,7 @@ export function StartScreen() {
         </h1>
         <h2
           style={{
-            fontSize: '48px',
+            fontSize: isMobile ? '28px' : '48px',
             fontFamily: 'monospace',
             fontWeight: 'bold',
             color: COLORS.TEXT,
@@ -48,7 +51,7 @@ export function StartScreen() {
       <div
         className="pixel-border"
         style={{
-          padding: '30px 50px',
+          padding: isMobile ? '20px' : '30px 50px',
           backgroundColor: 'rgba(0, 0, 0, 0.8)',
           textAlign: 'center',
         }}
@@ -56,7 +59,7 @@ export function StartScreen() {
         <p
           style={{
             color: COLORS.TEXT,
-            fontSize: '18px',
+            fontSize: isMobile ? '14px' : '18px',
             fontFamily: 'monospace',
             marginBottom: '20px',
             lineHeight: '1.6',
@@ -64,20 +67,22 @@ export function StartScreen() {
         >
           复古像素风机甲对战游戏
           <br />
-          <span style={{ color: COLORS.ACCENT }}>本地双人对战</span>
+          <span style={{ color: COLORS.ACCENT }}>单人AI对战</span>
         </p>
 
         <div
           style={{
             display: 'flex',
-            gap: '40px',
+            gap: isMobile ? '20px' : '40px',
             marginBottom: '30px',
+            alignItems: 'center',
+            justifyContent: 'center',
           }}
         >
           <div style={{ textAlign: 'center' }}>
             <div
               style={{
-                fontSize: '24px',
+                fontSize: isMobile ? '18px' : '24px',
                 fontWeight: 'bold',
                 color: COLORS.PLAYER1_PRIMARY,
                 marginBottom: '8px',
@@ -87,17 +92,17 @@ export function StartScreen() {
             </div>
             <div
               style={{
-                fontSize: '14px',
+                fontSize: '12px',
                 color: COLORS.TEXT,
                 fontFamily: 'monospace',
               }}
             >
-              攻击型
+              玩家
             </div>
           </div>
           <div
             style={{
-              fontSize: '32px',
+              fontSize: isMobile ? '24px' : '32px',
               color: COLORS.ACCENT,
               fontWeight: 'bold',
             }}
@@ -107,7 +112,7 @@ export function StartScreen() {
           <div style={{ textAlign: 'center' }}>
             <div
               style={{
-                fontSize: '24px',
+                fontSize: isMobile ? '18px' : '24px',
                 fontWeight: 'bold',
                 color: COLORS.PLAYER2_PRIMARY,
                 marginBottom: '8px',
@@ -117,12 +122,12 @@ export function StartScreen() {
             </div>
             <div
               style={{
-                fontSize: '14px',
+                fontSize: '12px',
                 color: COLORS.TEXT,
                 fontFamily: 'monospace',
               }}
             >
-              防御型
+              AI
             </div>
           </div>
         </div>
@@ -131,8 +136,8 @@ export function StartScreen() {
       <button
         onClick={startGame}
         style={{
-          padding: '16px 48px',
-          fontSize: '24px',
+          padding: isMobile ? '12px 36px' : '16px 48px',
+          fontSize: isMobile ? '18px' : '24px',
           fontFamily: 'monospace',
           fontWeight: 'bold',
           color: '#000',
@@ -141,6 +146,8 @@ export function StartScreen() {
           cursor: 'pointer',
           boxShadow: '4px 4px 0 #000',
           transition: 'all 0.1s',
+          touchAction: 'manipulation',
+          WebkitUserSelect: 'none',
         }}
         onMouseEnter={(e) => {
           e.currentTarget.style.transform = 'translate(-2px, -2px)';
@@ -162,17 +169,30 @@ export function StartScreen() {
         开始游戏
       </button>
 
-      <div
-        style={{
-          color: '#888',
-          fontSize: '14px',
-          fontFamily: 'monospace',
-          textAlign: 'center',
-        }}
-      >
-        <div>玩家1: WASD移动 | F攻击 | G防御</div>
-        <div style={{ marginTop: '4px' }}>玩家2: 方向键移动 | J攻击 | K防御</div>
-      </div>
+      {!isMobile && (
+        <div
+          style={{
+            color: '#888',
+            fontSize: '14px',
+            fontFamily: 'monospace',
+            textAlign: 'center',
+          }}
+        >
+          <div>键盘: WASD移动 | F攻击 | G防御</div>
+        </div>
+      )}
+      {isMobile && (
+        <div
+          style={{
+            color: '#888',
+            fontSize: '12px',
+            fontFamily: 'monospace',
+            textAlign: 'center',
+          }}
+        >
+          <div>使用屏幕虚拟按钮控制</div>
+        </div>
+      )}
     </div>
   );
 }

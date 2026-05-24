@@ -2,16 +2,22 @@ import { useEffect, useRef } from 'react';
 import { useGameStore } from '../../stores/gameStore';
 import { useKeyboard } from '../../hooks/useKeyboard';
 import { useGameLoop } from '../../hooks/useGameLoop';
+import { useResponsiveGame } from '../../hooks/useResponsiveGame';
+import { useAIPlayer } from '../../hooks/useAIPlayer';
 import { BattleField } from './BattleField';
 import { Mech } from './Mech';
 import { HealthBar } from './HealthBar';
 import { Effects } from './Effects';
+import { VirtualController } from '../UI/VirtualController';
 import { GAME_CONFIG } from '../../utils/constants';
 
 export function GameCanvas() {
   useKeyboard();
   useGameLoop();
+  useResponsiveGame();
+  useAIPlayer();
   const animationFrameRef = useRef<number>();
+  const isMobile = window.innerWidth <= 768;
 
   const {
     mechs,
@@ -57,6 +63,7 @@ export function GameCanvas() {
         alignItems: 'center',
         gap: '20px',
         padding: '20px',
+        paddingBottom: isMobile ? '180px' : '20px',
       }}
     >
       <div
@@ -76,7 +83,7 @@ export function GameCanvas() {
           playerId="player2"
           health={mechs.player2.health}
           maxHealth={mechs.player2.maxHealth}
-          name={mechs.player2.name}
+          name="AI (铁壁)"
         />
       </div>
 
@@ -87,25 +94,31 @@ export function GameCanvas() {
         <Effects effects={effects} />
       </div>
 
-      <div
-        className="pixel-border"
-        style={{
-          padding: '12px 20px',
-          backgroundColor: 'rgba(0, 0, 0, 0.8)',
-          color: '#fff',
-          fontSize: '14px',
-          fontFamily: 'monospace',
-          textAlign: 'center',
-          lineHeight: '1.8',
-        }}
-      >
-        <div style={{ color: COLORS.PLAYER1_PRIMARY, fontWeight: 'bold' }}>
-          玩家1 (铁拳): A/D 移动 | W 跳跃 | F 攻击 | G 防御
+      {!isMobile && (
+        <div
+          className="pixel-border"
+          style={{
+            padding: '12px 20px',
+            backgroundColor: 'rgba(0, 0, 0, 0.8)',
+            color: '#fff',
+            fontSize: '14px',
+            fontFamily: 'monospace',
+            textAlign: 'center',
+            lineHeight: '1.8',
+          }}
+        >
+          <div style={{ color: COLORS.PLAYER1_PRIMARY, fontWeight: 'bold' }}>
+            玩家 (铁拳): A/D 移动 | W 跳跃 | F 攻击 | G 防御
+          </div>
         </div>
-        <div style={{ color: COLORS.PLAYER2_PRIMARY, fontWeight: 'bold', marginTop: '4px' }}>
-          玩家2 (铁壁): ←/→ 移动 | ↑ 跳跃 | J 攻击 | K 防御
-        </div>
-      </div>
+      )}
+
+      {isMobile && gameStatus === 'playing' && (
+        <>
+          <VirtualController playerId="player1" side="left" />
+          <VirtualController playerId="player1" side="right" />
+        </>
+      )}
     </div>
   );
 }

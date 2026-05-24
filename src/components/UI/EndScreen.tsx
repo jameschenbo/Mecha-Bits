@@ -1,11 +1,15 @@
 import { useGameStore } from '../../stores/gameStore';
 import { COLORS } from '../../utils/constants';
+import { useResponsiveGame } from '../../hooks/useResponsiveGame';
 import type { PlayerId } from '../../types/game';
 
 export function EndScreen() {
   const { winner, resetGame, startGame } = useGameStore();
+  useResponsiveGame();
+  const isMobile = window.innerWidth <= 768;
 
   const winnerName = winner === 'player1' ? '铁拳' : '铁壁';
+  const winnerLabel = winner === 'player1' ? '玩家' : 'AI';
   const winnerColor = winner === 'player1' ? COLORS.PLAYER1_PRIMARY : COLORS.PLAYER2_PRIMARY;
 
   return (
@@ -16,14 +20,14 @@ export function EndScreen() {
         alignItems: 'center',
         justifyContent: 'center',
         minHeight: '80vh',
-        gap: '40px',
-        padding: '40px',
+        gap: isMobile ? '20px' : '40px',
+        padding: isMobile ? '20px' : '40px',
       }}
     >
       <div style={{ textAlign: 'center' }}>
         <h1
           style={{
-            fontSize: '48px',
+            fontSize: isMobile ? '28px' : '48px',
             fontFamily: 'monospace',
             fontWeight: 'bold',
             color: winnerColor,
@@ -32,11 +36,11 @@ export function EndScreen() {
             animation: 'pulse 1s ease-in-out infinite',
           }}
         >
-          {winnerName}
+          {winnerName} ({winnerLabel})
         </h1>
         <h2
           style={{
-            fontSize: '64px',
+            fontSize: isMobile ? '36px' : '64px',
             fontFamily: 'monospace',
             fontWeight: 'bold',
             color: COLORS.ACCENT,
@@ -52,7 +56,7 @@ export function EndScreen() {
       <div
         className="pixel-border"
         style={{
-          padding: '30px 50px',
+          padding: isMobile ? '20px' : '30px 50px',
           backgroundColor: 'rgba(0, 0, 0, 0.8)',
           textAlign: 'center',
         }}
@@ -60,20 +64,20 @@ export function EndScreen() {
         <p
           style={{
             color: COLORS.TEXT,
-            fontSize: '20px',
+            fontSize: isMobile ? '16px' : '20px',
             fontFamily: 'monospace',
             margin: 0,
             lineHeight: '1.6',
           }}
         >
           恭喜{' '}
-          <span style={{ color: winnerColor, fontWeight: 'bold' }}>{winnerName}</span>{' '}
+          <span style={{ color: winnerColor, fontWeight: 'bold' }}>{winnerName} ({winnerLabel})</span>{' '}
           获得胜利！
         </p>
         <p
           style={{
             color: '#888',
-            fontSize: '14px',
+            fontSize: '12px',
             fontFamily: 'monospace',
             marginTop: '10px',
           }}
@@ -82,12 +86,12 @@ export function EndScreen() {
         </p>
       </div>
 
-      <div style={{ display: 'flex', gap: '20px' }}>
+      <div style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', gap: '15px' }}>
         <button
           onClick={startGame}
           style={{
-            padding: '16px 32px',
-            fontSize: '20px',
+            padding: isMobile ? '12px 24px' : '16px 32px',
+            fontSize: isMobile ? '16px' : '20px',
             fontFamily: 'monospace',
             fontWeight: 'bold',
             color: '#000',
@@ -96,6 +100,7 @@ export function EndScreen() {
             cursor: 'pointer',
             boxShadow: '4px 4px 0 #000',
             transition: 'all 0.1s',
+            touchAction: 'manipulation',
           }}
           onMouseEnter={(e) => {
             e.currentTarget.style.transform = 'translate(-2px, -2px)';
@@ -120,8 +125,8 @@ export function EndScreen() {
         <button
           onClick={resetGame}
           style={{
-            padding: '16px 32px',
-            fontSize: '20px',
+            padding: isMobile ? '12px 24px' : '16px 32px',
+            fontSize: isMobile ? '16px' : '20px',
             fontFamily: 'monospace',
             fontWeight: 'bold',
             color: '#fff',
@@ -130,6 +135,7 @@ export function EndScreen() {
             cursor: 'pointer',
             boxShadow: '4px 4px 0 #000',
             transition: 'all 0.1s',
+            touchAction: 'manipulation',
           }}
           onMouseEnter={(e) => {
             e.currentTarget.style.transform = 'translate(-2px, -2px)';
